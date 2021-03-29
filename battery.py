@@ -5,6 +5,7 @@ class Battery:
         self.max_charging = max_charging # negative
         self.max_discharge = max_discharge # positive
         self.soc = 1 # start the simultation with 100% soc
+        self.powers = []
     
     def generate_random_power(self):
         self.power = lib.generate_random(self.max_charging, self.max_discharge)
@@ -12,6 +13,11 @@ class Battery:
     
     def get_power(self):
         return self.power
+
+    def set_power(self, t, power):
+        self.power = power
+        self.powers[t] = power
+        #TODO: calculate soc
         
 
 

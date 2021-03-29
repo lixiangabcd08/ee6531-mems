@@ -12,12 +12,12 @@ def forecast(l,p,w):
     w.forecast(constants.wind_forecast)
 
 
-b = new Battery(constants.battery_max_charge,constants.battery_max_discharge)
-g = new GasTurbine(constants.gas_turbine_max)
-l = new Load()
-p = new PV(constants.pv_max)
-w = new WindTurbine(constants.wind_turbine_max)
-m = new MESM(b,g,p,w)
+b = Battery(constants.battery_max_charge,constants.battery_max_discharge)
+g = GasTurbine(constants.gas_turbine_max)
+l = Load()
+p = PV(constants.pv_max)
+w = WindTurbine(constants.wind_turbine_max)
+m = MEMS(b,g,l,p,w)
 
 forecast(l,p,w)
 for t in range(24): # 24 hours

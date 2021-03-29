@@ -1,4 +1,5 @@
 import random
+import lib
 
 class GasTurbine:
     def __init__(self, capacity):
@@ -10,3 +11,6 @@ class GasTurbine:
 
     def get_power(self):
         return self.power
+    
+    def get_capacity(self):
+        return self.capacity
