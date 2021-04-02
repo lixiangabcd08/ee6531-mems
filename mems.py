@@ -10,8 +10,8 @@ class MEMS:
         load_power = self.load.get_total_forecast(t)
         pv_power = self.pv.get_forecast(t)
         wind_power = self.wind.get_forecast(t)
-        battery_power = self.battery.get_power()
-        gas_turbine_power = self.gas_turbine.get_power()
+        battery_power = self.battery.get_power(t)
+        gas_turbine_power = self.gas_turbine.get_power(t)
         net_load = load_power - (pv_power+wind_power+battery_power+gas_turbine_power)
         if net_load < 0: # excess production
             if -net_load < wind_power:
@@ -30,5 +30,5 @@ class MEMS:
                 else:
                     load_power = net_load - battery_power - gas_turbine_power
             else:
-                gas_turbine = 0
+                gas_turbine_power = 0
         

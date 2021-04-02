@@ -12,6 +12,10 @@ class Load:
         return self.important_forecasts[t]+self.transferrable_forecasts[t]
 
     def set_load(self, t, power):
-        pass
+        if power > self.important[t]:
+            self.tranferrable[t] = power - self.important[t]
+        else:
+            self.tranferrable[t] = 0
+            self.important[t] = power
 
 
