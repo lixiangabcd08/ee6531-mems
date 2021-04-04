@@ -11,3 +11,6 @@ class WindTurbine:
 
     def set_power(self, t, power):
         self.powers[t] = power
+    
+    def get_power(self, t):
+        return self.powers[t]

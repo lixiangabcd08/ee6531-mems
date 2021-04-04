@@ -1,7 +1,14 @@
 class GasTurbine:
-    def __init__(self, capacity):
+    def __init__(self,capacity,fual_cost,co2_coe,co2_cost,so2_coe,so2_cost,no_coe,no_cost):
         self.capacity = capacity
         self.powers = []
+        self.fual_cost = fual_cost
+        self.co2_coe = co2_coe
+        self.co2_cost = co2_cost
+        self.so2_coe = so2_coe
+        self.so2_cost = so2_cost
+        self.no_coe = no_coe
+        self.no_cost = no_cost
 
     def get_power(self, t):
         return self.powers[t]
