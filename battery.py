@@ -3,9 +3,9 @@ class Battery:
         self.capacity = capacity
         self.max_charging = max_charging # negative
         self.max_discharge = max_discharge # positive
-        self.socs = [] 
+        self.socs = [None]*24 
         self.socs[0] = 1 # start the simultation with 100% soc
-        self.powers = []
+        self.powers = [None]*24
         self.nbatt = nbatt # self-discharge effeciency
         self.nbatt_c = nbatt_c # charge efficiency
         self.nbatt_d = nbatt_d # discharge efficienty

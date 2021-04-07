@@ -15,9 +15,9 @@ class MEMS:
         net_load = load_power - (pv_power+wind_power+battery_power+gas_turbine_power)
         if net_load < 0: # excess production
             # TODO: increase the load
-            if -net_load > l.get_max_transferable():
-                load_power += l.get_max_transferable()
-                net_load = -net_load + l.get_max_transferable()
+            if -net_load > self.load.get_max_transferable(t):
+                load_power += self.load.get_max_transferable(t)
+                net_load = -net_load + self.load.get_max_transferable(t)
                 if -net_load < wind_power:
                     wind_power = wind_power + net_load
                 elif -net_load < (wind_power+pv_power):
@@ -35,4 +35,10 @@ class MEMS:
                     load_power = net_load - battery_power - gas_turbine_power
             else:
                 gas_turbine_power = 0
+
+        self.gas_turbine.set_power(t,gas_turbine_power)
+        self.load.set_load(t,load_power)
+        self.pv.set_power(t,pv_power)
+        self.wind.set_power(t,wind_power)
+        self.battery.set_power(t,battery_power)
         

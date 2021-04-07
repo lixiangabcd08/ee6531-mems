@@ -13,7 +13,7 @@ class Load:
         return self.important_forecasts[t]+self.transferable_forecasts[t]
 
     def set_load(self, t, power):
-        if power > self.important[t]:
+        if power > self.important_forecasts[t]:
             self.transferable.append(power - self.important_forecasts[t])
             self.important.append(self.important_forecasts[t])
         else:

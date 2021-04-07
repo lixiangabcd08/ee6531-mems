@@ -4,22 +4,24 @@ from load import Load
 from pv import PV
 from wind_turbine import WindTurbine
 from mems import MEMS
-from solution import Solution
 import constants
+import math
 
 class Simulation:
 
     def __init__(self):
-        self.b = Battery(constants.battery_capacity,constants.battery_max_charge,constants.battery_max_discharge,constants.nbatt,constants.nbatt_c,constants.nbatt_d)
-        self.g = GasTurbine(constants.gas_turbine_max)
-        self.l = Load()
-        self.p = PV(constants.pv_max)
-        self.w = WindTurbine(constants.wind_turbine_max)
-        self.m = MEMS(b,g,l,p,w)
+        self.b = Battery(constants.battery_capacity,constants.battery_max_charge,constants.battery_max_discharge,constants.nbatt,constants.nbatt_c,constants.nbatt_d,\
+            constants.battery_cost, constants.life_time, constants.round_trip)
+        self.g = GasTurbine(constants.gas_turbine_max, constants.microgas_turbine_om_cost, constants.fual_cost, constants.co2_coe, constants.co2_cost, \
+            constants.so2_coe, constants.so2_cost, constants.no_coe, constants.no_cost)
+        self.l = Load(constants.shortage_cost)
+        self.p = PV(constants.pv_max, constants.pv_om_cost)
+        self.w = WindTurbine(constants.wind_turbine_max, constants.wind_turbine_om_cost)
+        self.m = MEMS(self.b,self.g,self.l,self.p,self.w)
 
-        self.l.forecast(constants.load_important_forecast,constants.load_interruptive_forecast,constants.load_transferable_forecast)
-        self.p.forecast(constants.pv_forecast)
-        self.w.forecast(constants.wind_forecast)
+        self.l.set_forecast(constants.load_important_forecast,constants.load_transferable_forecast)
+        self.p.set_forecast([ir/0.2*1000 for ir in constants.pv_forecast])
+        self.w.set_forecast([0.2*wind_speed**3 for wind_speed in constants.wind_forecast])
 
 
     def simulate(self, battery_powers, gas_turbine_powers):
@@ -46,8 +48,8 @@ class Simulation:
         pollution_cost = 0
         for t in range(24):
             hourly_cost = self.g.get_power(t)*self.g.co2_coe*self.g.co2_cost \
-                +self.g.get_power(t)*self.so2_coe*self.so2_cost \
-                +self.g.get_power(t)*self.no_coe*self.no_cost
+                +self.g.get_power(t)*self.g.so2_coe*self.g.so2_cost \
+                +self.g.get_power(t)*self.g.no_coe*self.g.no_cost
             pollution_cost += hourly_cost
         return pollution_cost
 
@@ -63,7 +65,7 @@ class Simulation:
 
     def is_constraint_1(self): # soc is within 0 and 100
         for t in range(24):
-            if self.b.socs[t] < 0 or self.b.socs > 1:
+            if self.b.socs[t] < 0 or self.b.socs[t] > 1:
                 return 1 # infeasible
         return 0 # feasible
     

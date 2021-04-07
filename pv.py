@@ -1,10 +1,10 @@
 class PV:
     def __init__(self, capacity, maintenance_factor):
         self.capacity = capacity
-        self.powers = []
+        self.powers = [None]*24
         self.maintenance_factor = maintenance_factor
     
-    def forecast(self, forecasts):
+    def set_forecast(self, forecasts):
         self.forecasts = forecasts
     
     def get_forecast(self, t):
