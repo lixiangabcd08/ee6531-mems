@@ -1,9 +1,10 @@
 from pymoo.algorithms.nsga2 import NSGA2
-from pymoo.factory import get_sampling, get_crossover, get_mutation, get_termination
+from pymoo.factory import get_sampling, get_crossover, get_mutation, get_termination, get_problem, get_reference_directions
 from pymoo.optimize import minimize
 import constants
 from problem import MESMProblem
 from pymoo.visualization.scatter import Scatter
+from simulation import Simulation
 
 
 problem = MESMProblem()
@@ -23,4 +24,15 @@ res = minimize(problem,
                save_history=True,
                verbose=True)
 
-print(res.pop.get("X"))
+print(res.pop.get("X")[0])
+# select the best one from the solution
+
+solution = res.pop.get("X")[0]
+battery_powers = []
+gas_turbine_powers = []
+for t in range(24):
+    battery_powers.append(solution[t])
+    gas_turbine_powers.append(solution[24+t])
+new_simulation = Simulation()
+new_simulation.simulate(battery_powers,gas_turbine_powers)
+new_simulation.plot_power()

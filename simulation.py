@@ -6,6 +6,7 @@ from wind_turbine import WindTurbine
 from mems import MEMS
 import constants
 import math
+import matplotlib.pyplot as plt
 
 class Simulation:
 
@@ -79,3 +80,12 @@ class Simulation:
             return 1 # infeasible
         else: 
             return 0 #feasible
+
+    def plot_power(self):
+        plt.plot(self.p.powers,label='Solar')
+        plt.plot(self.w.powers,label='Wind Turbine')
+        plt.plot(self.b.powers,label='Battery')
+        plt.plot(self.g.powers,label='Genset')
+        plt.plot(self.l.important,label='Load')
+        plt.legend()
+        plt.show()
