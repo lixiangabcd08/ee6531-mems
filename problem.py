@@ -7,7 +7,7 @@ class MESMProblem(Problem):
     def __init__(self):
         super().__init__(n_var=48,
                     n_obj=3,
-                    n_constr=2,
+                    n_constr=3,
                     xl=np.concatenate((np.full(24,constants.battery_max_charge),np.full(24,0))),
                     xu=np.concatenate((np.full(24,constants.battery_max_discharge),np.full(24,constants.gas_turbine_max))),
                     elementwise_evaluation=True)
@@ -25,8 +25,9 @@ class MESMProblem(Problem):
         f2 = new_simulation.get_objective_2()
         f3 = new_simulation.get_objective_3()
 
-        g1 = new_simulation.is_constraint_1()
-        g2 = new_simulation.is_constraint_2()
+        g1 = new_simulation.get_constraint_1()
+        g2 = new_simulation.get_constraint_2()
+        g3 = new_simulation.get_constraint_3()
 
         out["F"] = [f1, f2, f3]
-        out["G"] = [g1, g2]
+        out["G"] = [g1, g2, g3]

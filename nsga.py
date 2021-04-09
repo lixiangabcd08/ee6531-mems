@@ -5,11 +5,11 @@ import constants
 from problem import MESMProblem
 from pymoo.visualization.scatter import Scatter
 from simulation import Simulation
-
+import matplotlib.pyplot as plt
 
 problem = MESMProblem()
 algorithm = NSGA2(
-    pop_size=40,
+    pop_size=500,
     n_offsprings=10,
     sampling=get_sampling("real_random"),
     crossover=get_crossover("real_sbx", prob=0.9, eta=15),
@@ -24,7 +24,7 @@ res = minimize(problem,
                save_history=True,
                verbose=True)
 
-print(res.pop.get("X")[0])
+# print(res.pop.get("X")[0])
 # select the best one from the solution
 
 solution = res.pop.get("X")[0]
@@ -36,3 +36,13 @@ for t in range(24):
 new_simulation = Simulation()
 new_simulation.simulate(battery_powers,gas_turbine_powers)
 new_simulation.plot_power()
+
+# fig = plt.figure()
+# ax = plt.axes(projection='3d')
+
+# fs = res.F
+# print(fs)
+# xdata = fs[:,0]
+# ydata = fs[:,1]
+# zdata = fs[:,2]
+# ax.scatter3D(xdata, ydata, zdata, c=zdata, cmap='Greens')
