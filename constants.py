@@ -7,7 +7,7 @@ shortage_cost = 1
 # battery
 battery_max_discharge = 159.8
 battery_max_charge = -21
-battery_capacity = 4*1.887
+battery_capacity = 400*1.887
 nbatt = 0.9
 nbatt_c = 0.9
 nbatt_d = 0.9

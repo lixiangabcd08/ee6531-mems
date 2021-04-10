@@ -63,36 +63,7 @@ class Simulation:
                 +self.b.get_power(t)-self.l.get_load(t)
             demand = demand + self.l.get_load(t)
         return waste/demand
-
-    def get_constraint_1(self): # soc is within 0 and 1
-        constraint_score = 0
-        for t in range(24):
-            soc = self.b.socs[t]
-            if soc < 0:
-                constraint_score -= soc # infeasible
-            elif soc > 1:
-                constraint_score += (soc-1)
-        return constraint_score
     
-    def get_constraint_2(self): # transferable load
-        expect_load = 0
-        actual_load = 0
-        for t in range(24):
-            expect_load += self.l.get_total_forecast(t)
-            actual_load += self.l.get_load(t)
-        if expect_load > actual_load:
-            return expect_load-actual_load
-        else: 
-            return 0 #feasible
-
-    def get_constraint_3(self):
-        constraint_score = 0
-        for t in range(24):
-            demand = self.l.get_load(t)
-            supply = self.b.get_power(t)+self.g.get_power(t)+self.w.get_power(t)+self.p.get_power(t)
-            if demand != supply:
-                constraint_score += abs(demand-supply)
-        return constraint_score
 
     def plot_power(self):
         plt.plot(self.p.powers,label='Solar')

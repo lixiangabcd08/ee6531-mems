@@ -26,6 +26,9 @@ class Load:
     def get_load(self, t):
         return self.important[t]+self.transferable[t]
 
+    def get_transferable(self,t):
+        return self.transferable_forecasts[t]
+
     def get_max_transferable(self,t):
         return sum(self.transferable_forecasts)-sum(self.transferable)-self.transferable_forecasts[t]
 

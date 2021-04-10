@@ -23,9 +23,19 @@ class Battery:
         self.powers[t] = power
         if t > 0:
             if power > 0: # discharge
-                self.socs[t] = (1-self.nbatt) - power/self.capacity/self.nbatt_d
+                self.socs[t] = self.socs[t-1]*self.nbatt - power/self.capacity/self.nbatt_d
             else: # charge
-                self.socs[t] = (1-self.nbatt) - power/self.capacity*self.nbatt_c
+                self.socs[t] = self.socs[t-1]*self.nbatt - power/self.capacity*self.nbatt_c
+        if self.socs[t] < 0: # discharge in the current run
+            self.socs[t] = 0
+            self.powers[t] = self.socs[t-1]*self.nbatt*self.capacity*self.nbatt_d # max discharge
+            return power - self.powers[t]
+        elif self.socs[t] > 1: # charge in the current run
+            self.socs[t] = 1
+            self.powers[t] = (self.socs[t-1]*self.nbatt-1)*self.capacity/self.nbatt_c # max charge
+            return self.powers[t] - power
+        else:
+            return 0
 
 
 
