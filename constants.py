@@ -1,19 +1,24 @@
 # load
-load_important_forecast = [500,100,100,150,200,250,300,400,500,1300,2100,2250,2350,1900,1500,1700,1900,2000,1700,4400,4450,1700,1500,1100]
+# load_important_forecast = [500,100,100,150,200,250,300,400,500,1300,2100,2250,2350,1900,1500,1700,1900,2000,1700,4400,4450,1700,1500,1100]
 #                           0   1   2   3   4   5   6   7   8   9    10   11   12   13   14   15   16   17   18   19   20   21   22   23
-load_transferable_forecast = [0,0,0,0,0,0, 0,0,0,0,0,0, 0,0,0,0,0,0, 0,0,0,0,0,0]
+# load_transferable_forecast = [0,0,0,0,0,0, 0,0,0,0,0,0, 0,0,0,0,0,0, 0,0,0,0,0,0]
+
+load_important_forecast = [500,100,100,150,200,250,300,400,500,1300,2100,2250,1350,900,500,700,900,1000,700,3400,3450,700,500,100]
+#                           0   1   2   3   4   5   6   7   8   9    10   11   12   13   14   15   16   17   18   19   20   21   22   23
+load_transferable_forecast = [0,0,0,0,0,0, 0,0,0,0,0,0, 1000,1000,1000,1000,500,1000, 1000,1000,1000,1000,1000,1000]
+
 shortage_cost = 1 
 
 # battery
-battery_max_discharge = 159.8
-battery_max_charge = -21
-battery_capacity = 400*1.887
-nbatt = 0.9
-nbatt_c = 0.9
-nbatt_d = 0.9
-battery_cost = 18480
+battery_max_discharge = 1000
+battery_max_charge = -1000
+battery_capacity = 1000
+nbatt = 1
+nbatt_c = 0.95
+nbatt_d = 0.95
+battery_cost = 350*battery_capacity
 life_time = 10*365*24 # 10 years
-round_trip = 0.8
+round_trip = nbatt_c*nbatt_d
 battery_om_cost = 0.00414
 
 # micro-gas turbine

@@ -3,7 +3,7 @@ from gas_turbine import GasTurbine
 from load import Load
 from pv import PV
 from wind_turbine import WindTurbine
-from mems import MEMS
+from mems import MEMS, BaseMEMS
 import constants
 import math
 import matplotlib.pyplot as plt
@@ -19,6 +19,7 @@ class Simulation:
         self.p = PV(constants.pv_max, constants.pv_om_cost)
         self.w = WindTurbine(constants.wind_turbine_max, constants.wind_turbine_om_cost)
         self.m = MEMS(self.b,self.g,self.l,self.p,self.w)
+        self.bm = BaseMEMS(self.b,self.g,self.l,self.p,self.w)
 
         self.l.set_forecast(constants.load_important_forecast,constants.load_transferable_forecast)
         self.p.set_forecast([ir/0.2*1000 for ir in constants.pv_forecast])
@@ -31,6 +32,11 @@ class Simulation:
         for t in range(24): # 24 hours
             self.m.control(t)
 
+
+    def simulate_base(self):
+        for t in range(24): # 24 hours
+            self.bm.control(t)
+
     # cost
     def get_objective_1(self):
         total_cost = 0
@@ -39,10 +45,8 @@ class Simulation:
             om_cost = self.w.maintenance_factor*self.w.get_power(t)+self.p.maintenance_factor*self.p.get_power(t)\
                 +self.g.maintenance_factor*self.g.get_power(t)
             fual = self.g.fual_cost*self.g.get_power(t)
-            battery_cost = self.b.cost/self.b.life_time/math.sqrt(self.b.round_trip)
-            load_cost = self.l.shortage_cost*self.l.get_shortage(t)
-            total_cost = total_cost + om_cost + fual + battery_cost + load_cost
-        return total_cost
+            total_cost = total_cost + om_cost + fual
+        return total_cost/1000
 
     # pollution
     def get_objective_2(self):
@@ -53,23 +57,40 @@ class Simulation:
                 +self.g.get_power(t)*self.g.no_coe*self.g.no_cost
             pollution_cost += hourly_cost
         return pollution_cost
-
-    # over production
-    def get_objective_3(self):
-        waste = 0
-        demand = 0
-        for t in range(24):
-            waste = waste+self.p.get_power(t)+self.w.get_power(t)+self.g.get_power(t)\
-                +self.b.get_power(t)-self.l.get_load(t)
-            demand = demand + self.l.get_load(t)
-        return waste/demand
     
+    def get_objective_3(self):
+        total_discharge = 0
+        battery_powers = self.b.powers
+        for t in range(24):
+            if battery_powers[t] < 0: # charging
+                total_discharge -= battery_powers[t]
+        return total_discharge/10
 
     def plot_power(self):
         plt.plot(self.p.powers,label='Solar')
         plt.plot(self.w.powers,label='Wind Turbine')
         plt.plot(self.b.powers,label='Battery')
-        plt.plot(self.g.powers,label='Genset')
-        plt.plot(self.l.important,label='Load')
+        plt.plot(self.g.powers,label='Microgas Turbine')
+        plt.plot([load1+load2 for load1,load2 in zip(self.l.important,self.l.transferable)],label='Load')
         plt.legend()
+        plt.xlabel("Time (h)")
+        plt.ylabel("Power (kW)")
         plt.show()
+
+
+if __name__ == "__main__":
+    # plot load
+    # plt.plot(constants.load_important_forecast, label='Important Load')
+    # plt.plot(constants.load_transferable_forecast, label='Transferable Load')
+    # plt.legend()
+    # plt.xlabel("Time (h)")
+    # plt.ylabel("Load (kW)")
+    # plt.show()
+
+
+    new_simulation = Simulation()
+    new_simulation.simulate_base()
+    print(new_simulation.get_objective_1())
+    print(new_simulation.get_objective_2())
+    print(new_simulation.get_objective_3())
+    new_simulation.plot_power()

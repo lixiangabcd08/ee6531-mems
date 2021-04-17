@@ -54,3 +54,55 @@ class MEMS:
         shortage = self.battery.set_power(t,battery_power) # battery cannot charge/discharge so much due to soc limit
         self.gas_turbine.set_power(t,gas_turbine_power+shortage)
         
+class BaseMEMS:
+    def __init__(self, battery, gas_turbine, load, pv, wind_turbine):
+        self.battery = battery
+        self.gas_turbine = gas_turbine
+        self.load = load
+        self.pv = pv
+        self.wind = wind_turbine
+
+    def control(self,t):
+        load_power = self.load.get_total_forecast(t)
+        pv_power = self.pv.get_forecast(t)
+        wind_power = self.wind.get_forecast(t)
+        soc = self.battery.get_soc(t)
+
+        if soc < 0.2: # only charge
+            if pv_power+wind_power > load_power:
+                battery_power = max(-(pv_power+wind_power-load_power), self.battery.get_max_charging())
+                if pv_power+battery_power < load_power:
+                    wind_power = load_power - pv_power - battery_power
+                else:
+                    wind_power = 0
+                    pv_power = load_power - battery_power
+            else:
+                battery_power = 0 #disable discharging
+        elif soc > 0.9: # only discharge
+            if pv_power+wind_power > load_power:
+                battery_power = 0
+                if pv_power < load_power:
+                    wind_power = load_power - pv_power
+                else:
+                    wind_power = 0
+                    pv_power = load_power
+            else:
+                battery_power = min(load_power-pv_power-wind_power, self.battery.get_max_discharge())
+        else:
+            if pv_power+wind_power > load_power:
+                battery_power = max(-(pv_power+wind_power-load_power), self.battery.get_max_charging())
+                if pv_power+battery_power < load_power:
+                    wind_power = load_power - pv_power - battery_power
+                else:
+                    wind_power = 0
+                    pv_power = load_power - battery_power
+            else:
+                battery_power = min(load_power-pv_power-wind_power, self.battery.get_max_discharge())
+
+        gas_turbine_power = load_power - pv_power - wind_power - battery_power
+
+        self.load.set_load(t,load_power)
+        self.pv.set_power(t,pv_power)
+        self.wind.set_power(t,wind_power)
+        shortage = self.battery.set_power(t,battery_power) # battery cannot charge/discharge so much due to soc limit
+        self.gas_turbine.set_power(t,gas_turbine_power+shortage)
